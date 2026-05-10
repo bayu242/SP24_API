@@ -8,6 +8,8 @@ import {
   deleteTeacher,
 } from "../controllers/teacher.controller.js";
 import { verifyToken, isAdmin } from "../middlewares/auth.middleware.js";
+import { uploadPhoto } from "../controllers/teacher.controller.js";
+import { uploadImage } from "../middlewares/uploadImage.middleware.js";
 
 const router = Router();
 
@@ -17,5 +19,12 @@ router.get("/", verifyToken, isAdmin, getTeachers);
 router.get("/:id", verifyToken, isAdmin, getTeacherById);
 router.put("/:id", verifyToken, isAdmin, updateTeacher);
 router.delete("/:id", verifyToken, isAdmin, deleteTeacher);
+router.post(
+  "/:id/photo",
+  verifyToken,
+  isAdmin,
+  uploadImage.single("photo"),
+  uploadPhoto,
+);
 
 export default router;

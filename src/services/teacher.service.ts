@@ -102,3 +102,28 @@ export const deleteTeacherService = async (id: number) => {
 
   return true;
 };
+
+export const uploadTeacherImageService = async (
+  id: number,
+  imageBuffer: Buffer,
+) => {
+  // 1. Pastikan guru ada
+  await getTeacherByIdService(id);
+
+  // 2. Konversi Buffer ke Uint8Array agar TypeScript & Prisma senang
+  const uint8Array = new Uint8Array(imageBuffer);
+
+  // 3. Update database
+  const updatedTeacher = await prisma.teacher.update({
+    where: { teacher_id: id },
+    data: {
+      images: uint8Array, // Gunakan variabel yang sudah dikonversi
+    },
+    select: {
+      teacher_id: true,
+      username: true,
+    },
+  });
+
+  return updatedTeacher;
+};

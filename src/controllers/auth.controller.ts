@@ -38,12 +38,10 @@ export const getNewAccessToken = async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
-      res
-        .status(400)
-        .json({
-          success: false,
-          message: "Refresh token tidak ditemukan di cookie.",
-        });
+      res.status(400).json({
+        success: false,
+        message: "Refresh token tidak ditemukan di cookie.",
+      });
       return;
     }
 

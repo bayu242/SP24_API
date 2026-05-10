@@ -84,3 +84,34 @@ export const deleteTeacher = async (req: Request, res: Response) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+
+import { uploadTeacherImageService } from "../services/teacher.service.js";
+
+export const uploadPhoto = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id as string);
+
+    // Middleware multer akan menyisipkan file ke dalam req.file
+    if (!req.file) {
+      res
+        .status(400)
+        .json({
+          success: false,
+          message: "Tidak ada file foto yang diunggah.",
+        });
+      return;
+    }
+
+    // Ambil Buffer dari file yang diunggah
+    const imageBuffer = req.file.buffer;
+
+    await uploadTeacherImageService(id, imageBuffer);
+
+    res.status(200).json({
+      success: true,
+      message: "Foto profil berhasil diunggah dan disimpan.",
+    });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
