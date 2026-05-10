@@ -737,6 +737,7 @@ export type TeacherScalarFieldEnum = (typeof TeacherScalarFieldEnum)[keyof typeo
 
 export const StudentScalarFieldEnum = {
   student_id: 'student_id',
+  nis: 'nis',
   first_name: 'first_name',
   last_name: 'last_name',
   class: 'class',
@@ -798,6 +799,7 @@ export type TeacherOrderByRelevanceFieldEnum = (typeof TeacherOrderByRelevanceFi
 
 
 export const StudentOrderByRelevanceFieldEnum = {
+  nis: 'nis',
   first_name: 'first_name',
   last_name: 'last_name',
   class: 'class',

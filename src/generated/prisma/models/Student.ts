@@ -38,6 +38,7 @@ export type StudentSumAggregateOutputType = {
 
 export type StudentMinAggregateOutputType = {
   student_id: number | null
+  nis: string | null
   first_name: string | null
   last_name: string | null
   class: string | null
@@ -49,6 +50,7 @@ export type StudentMinAggregateOutputType = {
 
 export type StudentMaxAggregateOutputType = {
   student_id: number | null
+  nis: string | null
   first_name: string | null
   last_name: string | null
   class: string | null
@@ -60,6 +62,7 @@ export type StudentMaxAggregateOutputType = {
 
 export type StudentCountAggregateOutputType = {
   student_id: number
+  nis: number
   first_name: number
   last_name: number
   class: number
@@ -83,6 +86,7 @@ export type StudentSumAggregateInputType = {
 
 export type StudentMinAggregateInputType = {
   student_id?: true
+  nis?: true
   first_name?: true
   last_name?: true
   class?: true
@@ -94,6 +98,7 @@ export type StudentMinAggregateInputType = {
 
 export type StudentMaxAggregateInputType = {
   student_id?: true
+  nis?: true
   first_name?: true
   last_name?: true
   class?: true
@@ -105,6 +110,7 @@ export type StudentMaxAggregateInputType = {
 
 export type StudentCountAggregateInputType = {
   student_id?: true
+  nis?: true
   first_name?: true
   last_name?: true
   class?: true
@@ -203,6 +209,7 @@ export type StudentGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type StudentGroupByOutputType = {
   student_id: number
+  nis: string
   first_name: string
   last_name: string
   class: string
@@ -237,6 +244,7 @@ export type StudentWhereInput = {
   OR?: Prisma.StudentWhereInput[]
   NOT?: Prisma.StudentWhereInput | Prisma.StudentWhereInput[]
   student_id?: Prisma.IntFilter<"Student"> | number
+  nis?: Prisma.StringFilter<"Student"> | string
   first_name?: Prisma.StringFilter<"Student"> | string
   last_name?: Prisma.StringFilter<"Student"> | string
   class?: Prisma.StringFilter<"Student"> | string
@@ -249,6 +257,7 @@ export type StudentWhereInput = {
 
 export type StudentOrderByWithRelationInput = {
   student_id?: Prisma.SortOrder
+  nis?: Prisma.SortOrder
   first_name?: Prisma.SortOrder
   last_name?: Prisma.SortOrder
   class?: Prisma.SortOrder
@@ -262,6 +271,7 @@ export type StudentOrderByWithRelationInput = {
 
 export type StudentWhereUniqueInput = Prisma.AtLeast<{
   student_id?: number
+  nis?: string
   tag_id?: string
   AND?: Prisma.StudentWhereInput | Prisma.StudentWhereInput[]
   OR?: Prisma.StudentWhereInput[]
@@ -273,10 +283,11 @@ export type StudentWhereUniqueInput = Prisma.AtLeast<{
   age?: Prisma.IntFilter<"Student"> | number
   images?: Prisma.BytesNullableFilter<"Student"> | runtime.Bytes | null
   presences?: Prisma.PresenceListRelationFilter
-}, "student_id" | "tag_id">
+}, "student_id" | "nis" | "tag_id">
 
 export type StudentOrderByWithAggregationInput = {
   student_id?: Prisma.SortOrder
+  nis?: Prisma.SortOrder
   first_name?: Prisma.SortOrder
   last_name?: Prisma.SortOrder
   class?: Prisma.SortOrder
@@ -296,6 +307,7 @@ export type StudentScalarWhereWithAggregatesInput = {
   OR?: Prisma.StudentScalarWhereWithAggregatesInput[]
   NOT?: Prisma.StudentScalarWhereWithAggregatesInput | Prisma.StudentScalarWhereWithAggregatesInput[]
   student_id?: Prisma.IntWithAggregatesFilter<"Student"> | number
+  nis?: Prisma.StringWithAggregatesFilter<"Student"> | string
   first_name?: Prisma.StringWithAggregatesFilter<"Student"> | string
   last_name?: Prisma.StringWithAggregatesFilter<"Student"> | string
   class?: Prisma.StringWithAggregatesFilter<"Student"> | string
@@ -306,6 +318,7 @@ export type StudentScalarWhereWithAggregatesInput = {
 }
 
 export type StudentCreateInput = {
+  nis: string
   first_name: string
   last_name: string
   class: string
@@ -318,6 +331,7 @@ export type StudentCreateInput = {
 
 export type StudentUncheckedCreateInput = {
   student_id?: number
+  nis: string
   first_name: string
   last_name: string
   class: string
@@ -329,6 +343,7 @@ export type StudentUncheckedCreateInput = {
 }
 
 export type StudentUpdateInput = {
+  nis?: Prisma.StringFieldUpdateOperationsInput | string
   first_name?: Prisma.StringFieldUpdateOperationsInput | string
   last_name?: Prisma.StringFieldUpdateOperationsInput | string
   class?: Prisma.StringFieldUpdateOperationsInput | string
@@ -341,6 +356,7 @@ export type StudentUpdateInput = {
 
 export type StudentUncheckedUpdateInput = {
   student_id?: Prisma.IntFieldUpdateOperationsInput | number
+  nis?: Prisma.StringFieldUpdateOperationsInput | string
   first_name?: Prisma.StringFieldUpdateOperationsInput | string
   last_name?: Prisma.StringFieldUpdateOperationsInput | string
   class?: Prisma.StringFieldUpdateOperationsInput | string
@@ -353,6 +369,7 @@ export type StudentUncheckedUpdateInput = {
 
 export type StudentCreateManyInput = {
   student_id?: number
+  nis: string
   first_name: string
   last_name: string
   class: string
@@ -363,6 +380,7 @@ export type StudentCreateManyInput = {
 }
 
 export type StudentUpdateManyMutationInput = {
+  nis?: Prisma.StringFieldUpdateOperationsInput | string
   first_name?: Prisma.StringFieldUpdateOperationsInput | string
   last_name?: Prisma.StringFieldUpdateOperationsInput | string
   class?: Prisma.StringFieldUpdateOperationsInput | string
@@ -374,6 +392,7 @@ export type StudentUpdateManyMutationInput = {
 
 export type StudentUncheckedUpdateManyInput = {
   student_id?: Prisma.IntFieldUpdateOperationsInput | number
+  nis?: Prisma.StringFieldUpdateOperationsInput | string
   first_name?: Prisma.StringFieldUpdateOperationsInput | string
   last_name?: Prisma.StringFieldUpdateOperationsInput | string
   class?: Prisma.StringFieldUpdateOperationsInput | string
@@ -391,6 +410,7 @@ export type StudentOrderByRelevanceInput = {
 
 export type StudentCountOrderByAggregateInput = {
   student_id?: Prisma.SortOrder
+  nis?: Prisma.SortOrder
   first_name?: Prisma.SortOrder
   last_name?: Prisma.SortOrder
   class?: Prisma.SortOrder
@@ -407,6 +427,7 @@ export type StudentAvgOrderByAggregateInput = {
 
 export type StudentMaxOrderByAggregateInput = {
   student_id?: Prisma.SortOrder
+  nis?: Prisma.SortOrder
   first_name?: Prisma.SortOrder
   last_name?: Prisma.SortOrder
   class?: Prisma.SortOrder
@@ -418,6 +439,7 @@ export type StudentMaxOrderByAggregateInput = {
 
 export type StudentMinOrderByAggregateInput = {
   student_id?: Prisma.SortOrder
+  nis?: Prisma.SortOrder
   first_name?: Prisma.SortOrder
   last_name?: Prisma.SortOrder
   class?: Prisma.SortOrder
@@ -452,6 +474,7 @@ export type StudentUpdateOneRequiredWithoutPresencesNestedInput = {
 }
 
 export type StudentCreateWithoutPresencesInput = {
+  nis: string
   first_name: string
   last_name: string
   class: string
@@ -463,6 +486,7 @@ export type StudentCreateWithoutPresencesInput = {
 
 export type StudentUncheckedCreateWithoutPresencesInput = {
   student_id?: number
+  nis: string
   first_name: string
   last_name: string
   class: string
@@ -489,6 +513,7 @@ export type StudentUpdateToOneWithWhereWithoutPresencesInput = {
 }
 
 export type StudentUpdateWithoutPresencesInput = {
+  nis?: Prisma.StringFieldUpdateOperationsInput | string
   first_name?: Prisma.StringFieldUpdateOperationsInput | string
   last_name?: Prisma.StringFieldUpdateOperationsInput | string
   class?: Prisma.StringFieldUpdateOperationsInput | string
@@ -500,6 +525,7 @@ export type StudentUpdateWithoutPresencesInput = {
 
 export type StudentUncheckedUpdateWithoutPresencesInput = {
   student_id?: Prisma.IntFieldUpdateOperationsInput | number
+  nis?: Prisma.StringFieldUpdateOperationsInput | string
   first_name?: Prisma.StringFieldUpdateOperationsInput | string
   last_name?: Prisma.StringFieldUpdateOperationsInput | string
   class?: Prisma.StringFieldUpdateOperationsInput | string
@@ -542,6 +568,7 @@ export type StudentCountOutputTypeCountPresencesArgs<ExtArgs extends runtime.Typ
 
 export type StudentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   student_id?: boolean
+  nis?: boolean
   first_name?: boolean
   last_name?: boolean
   class?: boolean
@@ -557,6 +584,7 @@ export type StudentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 
 export type StudentSelectScalar = {
   student_id?: boolean
+  nis?: boolean
   first_name?: boolean
   last_name?: boolean
   class?: boolean
@@ -566,7 +594,7 @@ export type StudentSelectScalar = {
   images?: boolean
 }
 
-export type StudentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"student_id" | "first_name" | "last_name" | "class" | "parent" | "tag_id" | "age" | "images", ExtArgs["result"]["student"]>
+export type StudentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"student_id" | "nis" | "first_name" | "last_name" | "class" | "parent" | "tag_id" | "age" | "images", ExtArgs["result"]["student"]>
 export type StudentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   presences?: boolean | Prisma.Student$presencesArgs<ExtArgs>
   _count?: boolean | Prisma.StudentCountOutputTypeDefaultArgs<ExtArgs>
@@ -579,6 +607,7 @@ export type $StudentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     student_id: number
+    nis: string
     first_name: string
     last_name: string
     class: string
@@ -957,6 +986,7 @@ export interface Prisma__StudentClient<T, Null = never, ExtArgs extends runtime.
  */
 export interface StudentFieldRefs {
   readonly student_id: Prisma.FieldRef<"Student", 'Int'>
+  readonly nis: Prisma.FieldRef<"Student", 'String'>
   readonly first_name: Prisma.FieldRef<"Student", 'String'>
   readonly last_name: Prisma.FieldRef<"Student", 'String'>
   readonly class: Prisma.FieldRef<"Student", 'String'>

@@ -2,8 +2,9 @@ import express, { Application, Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
-import teacherRoutes from "./routes/teacher.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import teacherRoutes from "./routes/teacher.routes.js";
+import studentRoutes from "./routes/student.routes.js";
 
 // 1. Inisialisasi variabel environment dari .env
 dotenv.config();
@@ -25,8 +26,9 @@ app.get("/", (req: Request, res: Response) => {
 
 // routes
 
-app.use("/api/teachers", teacherRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/teachers", teacherRoutes);
+app.use("/api/student", studentRoutes);
 
 // 4. Middleware Error Handling Global (Menangkap error dari seluruh rute)
 app.use((err: any, req: Request, res: Response, next: any) => {

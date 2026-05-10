@@ -2,6 +2,15 @@
 import { Request, Response } from "express";
 import { createTeacherService } from "../services/teacher.service.js";
 
+import {
+  getTeachersService,
+  getTeacherByIdService,
+  updateTeacherService,
+  deleteTeacherService,
+} from "../services/teacher.service.js";
+
+import { uploadTeacherImageService } from "../services/teacher.service.js";
+
 export const createTeacher = async (req: Request, res: Response) => {
   try {
     // 1. Ambil data dari body request
@@ -27,15 +36,6 @@ export const createTeacher = async (req: Request, res: Response) => {
     });
   }
 };
-
-// File: src/controllers/teacher.controller.ts
-// ... (import dan createTeacher tetap ada) ...
-import {
-  getTeachersService,
-  getTeacherByIdService,
-  updateTeacherService,
-  deleteTeacherService,
-} from "../services/teacher.service.js";
 
 export const getTeachers = async (req: Request, res: Response) => {
   try {
@@ -85,20 +85,16 @@ export const deleteTeacher = async (req: Request, res: Response) => {
   }
 };
 
-import { uploadTeacherImageService } from "../services/teacher.service.js";
-
 export const uploadPhoto = async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id as string);
 
     // Middleware multer akan menyisipkan file ke dalam req.file
     if (!req.file) {
-      res
-        .status(400)
-        .json({
-          success: false,
-          message: "Tidak ada file foto yang diunggah.",
-        });
+      res.status(400).json({
+        success: false,
+        message: "Tidak ada file foto yang diunggah.",
+      });
       return;
     }
 
