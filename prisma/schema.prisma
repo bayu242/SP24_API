@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Administrator {
+  admin_id Int    @id @default(autoincrement())
+  username String @unique @db.VarChar(255)
+  password String @db.VarChar(255)
+
+  // Menambahkan kolom untuk menyimpan Refresh Token
+  refresh_token String? @db.Text
+
+  @@map("administrator") // Best practice: menggunakan nama tabel lowercase di DB
+}
+
+model Teacher {
+  teacher_id Int    @id @default(autoincrement())
+  username   String @unique @db.VarChar(255)
+  password   String @db.VarChar(255)
+  first_name String @db.VarChar(255)
+  last_name  String @db.VarChar(255)
+  gender     String @db.Char(1)
+  age        Int
+  images     Bytes? @db.LongBlob // Sesuai diagram untuk penyimpanan gambar
+
+  // Menambahkan kolom untuk menyimpan Refresh Token
+  refresh_token String? @db.Text
+
+  presences Presence[]
+
+  @@map("teachers")
+}
+
+model Student {
+  student_id Int        @id @default(autoincrement())
+  first_name String     @db.VarChar(255)
+  last_name  String     @db.VarChar(255)
+  class      String     @db.VarChar(255)
+  parent     String     @db.VarChar(255)
+  tag_id     String     @unique @db.VarChar(255)
+  age        Int
+  images     Bytes?     @db.LongBlob
+  presences  Presence[]
+
+  @@map("students")
+}
+
+model Presence {
+  presence_id Int       @id @default(autoincrement())
+  teacher_id  Int
+  student_id  Int
+  enter       DateTime  @default(now()) @db.Timestamp(0)
+  exit        DateTime? @db.Timestamp(0)
+
+  // Relasi
+  teacher Teacher @relation(fields: [teacher_id], references: [teacher_id])
+  student Student @relation(fields: [student_id], references: [student_id])
+
+  @@index([teacher_id]) // Index untuk mempercepat query berdasarkan teacher
+  @@index([student_id]) // Index untuk mempercepat query berdasarkan student
+  @@map("presences")
+}

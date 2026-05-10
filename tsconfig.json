@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2023",
+    "strict": true,
+    "esModuleInterop": true,
+    "ignoreDeprecations": "6.0",
+    "types": [
+      "node"
+    ],
+    "moduleDetection": "force",
+    /* --- MODIFIKASI TAMBAHAN --- */
+    // 1. Pengaturan Folder Build (Untuk Produksi)
+    "outDir": "./dist",
+    "rootDir": "./src",
+    // 2. Keamanan & Utilitas
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true
+  },
+  // 3. Menentukan file mana yang diproses TypeScript
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
