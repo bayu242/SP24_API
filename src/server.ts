@@ -18,42 +18,102 @@ const io = new Server(server, {
   },
 });
 
+// Fungsi helper untuk membuat 6 digit angka acak
+const generateUniqueCode = () => {
+  let code;
+  do {
+    code = Math.floor(100000 + Math.random() * 900000).toString();
+  } while (activePairingCodes.has(code)); // Ulangi jika kebetulan kodenya sudah ada yang pakai
+  return code;
+};
+
+// === DEKLARASI DATABASE SEMENTARA (GLOBAL SCOPE) ===
+// Pastikan ketiga variabel ini berada di LUAR io.on("connection")
+const activePairingCodes = new Set<string>();
+const socketToCode = new Map<string, string>();
+const lastProcessedTags = new Map<string, { tagId: string; time: number }>();
+
 /**
- * LOGIKA WEBSOCKET PAIRING (Android -> Server -> WebApp)
+ * LOGIKA WEBSOCKET
  */
 io.on("connection", (socket) => {
-  console.log(`🔌 Connection established: ${socket.id}`);
+  console.log(`🔌 Device connected: ${socket.id}`);
+  // Server mengirim sinyal sapaan ke HP yang baru terhubung
+  socket.emit("server-ready", { status: "OK", message: "Server siap!" });
+  // 1. WebApp meminta kode pairing
+  socket.on("request-pairing-code", () => {
+    const newCode = generateUniqueCode(); // Pastikan fungsi ini sudah ada di atas
 
-  // Langkah 1: WebApp atau Android masuk ke 'Room' berdasarkan 6 digit pairing code
-  socket.on("join-pairing", (pairingCode: string) => {
-    if (!pairingCode) return;
-    socket.join(pairingCode);
-    console.log(
-      `📡 Device ${socket.id} is now listening/sending to Room: ${pairingCode}`,
-    );
+    activePairingCodes.add(newCode);
+    socket.join(newCode);
+
+    // Simpan ke Map agar saat WebApp disconnect bisa dihapus
+    socketToCode.set(socket.id, newCode);
+
+    socket.emit("pairing-code-generated", newCode);
+    console.log(`🎟️ Kode [${newCode}] aktif untuk WebApp [${socket.id}]`);
   });
 
-  // Langkah 2: Android mengirim tag_id (Hanya lewat, tidak simpan ke DB)
+  // 2. Android melakukan verifikasi status pairing
+  socket.on("check-pairing-code", (code: string) => {
+    if (activePairingCodes.has(code)) {
+      socket.emit("pairing-verified", { success: true });
+      console.log(`✅ Verifikasi sukses: Kode ${code} (Android: ${socket.id})`);
+    } else {
+      socket.emit("pairing-verified", { success: false });
+      console.log(`❌ Verifikasi gagal: Kode ${code} tidak valid`);
+    }
+  });
+
+  // 3. Android mengirim tag (Dengan proteksi Debounce / Double-Scan)
   socket.on(
     "android-send-tag",
     (data: { pairingCode: string; tagId: string }) => {
       const { pairingCode, tagId } = data;
+      const now = Date.now();
+      const lastEntry = lastProcessedTags.get(socket.id);
 
-      if (pairingCode && tagId) {
-        // Teruskan data ke WebApp yang berada di room yang sama
+      // Mencegah pengiriman ganda: Abaikan jika TagID sama & selisih waktu < 1.5 detik
+      if (
+        lastEntry &&
+        lastEntry.tagId === tagId &&
+        now - lastEntry.time < 1500
+      ) {
+        return;
+      }
+
+      if (activePairingCodes.has(pairingCode)) {
+        // Catat waktu scan untuk keperluan debounce berikutnya
+        lastProcessedTags.set(socket.id, { tagId, time: now });
+
         io.to(pairingCode).emit("nfc-received", {
-          tagId: tagId,
+          tagId,
           timestamp: new Date().toISOString(),
         });
-
-        console.log(
-          `📲 NFC Bridge: Tag [${tagId}] forwarded to WebApp in Room [${pairingCode}]`,
-        );
+        console.log(`📲 NFC Bridge: Tag [${tagId}] -> Room [${pairingCode}]`);
+      } else {
+        socket.emit("pairing-error", "Kode tidak valid atau sudah kadaluarsa!");
       }
     },
   );
 
+  // 4. Cleanup saat ada perangkat (Android/WebApp) yang terputus
   socket.on("disconnect", () => {
+    // A. Cleanup jika yang terputus adalah WebApp
+    if (socketToCode.has(socket.id)) {
+      const codeToDelete = socketToCode.get(socket.id);
+      if (codeToDelete) {
+        activePairingCodes.delete(codeToDelete);
+        console.log(`🗑️ WebApp ditutup. Kode [${codeToDelete}] dihapus.`);
+      }
+      socketToCode.delete(socket.id);
+    }
+
+    // B. Cleanup jika yang terputus adalah Android (Hapus histori debounce)
+    if (lastProcessedTags.has(socket.id)) {
+      lastProcessedTags.delete(socket.id);
+    }
+
     console.log(`❌ Device disconnected: ${socket.id}`);
   });
 });
