@@ -4,8 +4,12 @@ info:
   description: Dokumentasi REST API untuk Sistem Presensi SP24 menggunakan Node.js, TypeScript, dan Prisma.
   version: 1.0.0
 servers:
+  - url: http://192.168.100.100:3000
+    description: Local Development
   - url: http://localhost:3000
-    description: Local Development Server
+    description: Local Development
+  - url: https://sp24api.wind.my.id
+    description: Production
 
 components:
   securitySchemes:
