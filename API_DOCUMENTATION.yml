@@ -1,0 +1,293 @@
+openapi: 3.0.3
+info:
+  title: SP24 NFC Reader API
+  description: Dokumentasi REST API untuk Sistem Presensi SP24 menggunakan Node.js, TypeScript, dan Prisma.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Local Development Server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ================= AUTHENTICATION =================
+  /api/auth/admin/login:
+    post:
+      tags: [Auth]
+      summary: Login Administrator
+      security: [] # Publik, tidak butuh token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: admin
+                password:
+                  type: string
+                  example: admin
+      responses:
+        '200':
+          description: Berhasil login, mengembalikan JWT Token.
+
+  /api/auth/teacher/login:
+    post:
+      tags: [Auth]
+      summary: Login Teacher (Guru)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: guru_joko
+                password:
+                  type: string
+                  example: password123
+      responses:
+        '200':
+          description: Berhasil login.
+
+  /api/auth/refresh-token:
+    post:
+      tags: [Auth]
+      summary: Generate Token Baru (Refresh Session)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Berhasil mendapatkan token baru.
+
+  # ================= TEACHERS =================
+  /api/teachers:
+    get:
+      tags: [Teachers]
+      summary: Mengambil semua data guru
+      responses:
+        '200':
+          description: List semua guru.
+    post:
+      tags: [Teachers]
+      summary: Menambahkan guru baru
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                gender:
+                  type: string
+                  enum: [L, P]
+                age:
+                  type: integer
+      responses:
+        '201':
+          description: Guru berhasil ditambahkan.
+
+  /api/teachers/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+    get:
+      tags: [Teachers]
+      summary: Mengambil detail satu guru
+      responses:
+        '200':
+          description: Data guru ditemukan.
+    put:
+      tags: [Teachers]
+      summary: Mengubah data guru
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+      responses:
+        '200':
+          description: Data guru berhasil diubah.
+    delete:
+      tags: [Teachers]
+      summary: Menghapus data guru
+      responses:
+        '200':
+          description: Guru berhasil dihapus.
+
+  /api/teachers/{id}/photo:
+    put:
+      tags: [Teachers]
+      summary: Mengunggah foto profil guru
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Foto berhasil diunggah.
+
+  # ================= STUDENTS =================
+  /api/students:
+    get:
+      tags: [Students]
+      summary: Mengambil semua data siswa
+      responses:
+        '200':
+          description: List semua siswa.
+    post:
+      tags: [Students]
+      summary: Menambahkan siswa baru
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nis:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                class:
+                  type: string
+                parent:
+                  type: string
+                tag_id:
+                  type: string
+                age:
+                  type: integer
+      responses:
+        '201':
+          description: Siswa berhasil ditambahkan.
+
+  /api/students/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+    get:
+      tags: [Students]
+      summary: Mengambil detail satu siswa
+      responses:
+        '200':
+          description: Data siswa ditemukan.
+    put:
+      tags: [Students]
+      summary: Mengubah data siswa
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nis:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                class:
+                  type: string
+                parent:
+                  type: string
+                tag_id:
+                  type: string
+                age:
+                  type: integer
+      responses:
+        '200':
+          description: Data siswa berhasil diubah.
+    delete:
+      tags: [Students]
+      summary: Menghapus data siswa
+      responses:
+        '200':
+          description: Siswa berhasil dihapus.
+
+  # ================= PRESENCES =================
+  /api/presences/tap:
+    post:
+      tags: [Presences]
+      summary: Mencatat absensi (Masuk / Pulang) via Tap NFC
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tag_id:
+                  type: string
+                teacher_id:
+                  type: integer
+      responses:
+        '200':
+          description: Absensi berhasil dicatat.
+
+  /api/presences/parent/{nis}:
+    get:
+      tags: [Presences]
+      summary: Portal Orang Tua - Cek Absensi Siswa
+      security: [] # Publik
+      parameters:
+        - in: path
+          name: nis
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Mengembalikan 30 data absensi terakhir.

@@ -2,6 +2,9 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
+import path from 'path';
 import authRoutes from "./routes/auth.routes.js";
 import teacherRoutes from "./routes/teacher.routes.js";
 import studentRoutes from "./routes/student.routes.js";
@@ -25,6 +28,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/teachers", teacherRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/presences", presenceRoutes);
+// Load file YAML
+const swaggerDocument = YAML.load(path.join(process.cwd(), 'API_DOCUMENTATION.yml'));
+// Tambahkan rute untuk dokumentasi
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // 4. Middleware Error Handling Global (Menangkap error dari seluruh rute)
 app.use((err, req, res, next) => {
     console.error("Terjadi Error:", err.message);
