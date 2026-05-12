@@ -101,11 +101,12 @@ export const uploadPhoto = async (req: Request, res: Response) => {
     // Ambil Buffer dari file yang diunggah
     const imageBuffer = req.file.buffer;
 
-    await uploadTeacherImageService(id, imageBuffer);
+    const data = await uploadTeacherImageService(id, imageBuffer);
 
     res.status(200).json({
       success: true,
       message: "Foto profil berhasil diunggah dan disimpan.",
+      data: data,
     });
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message });

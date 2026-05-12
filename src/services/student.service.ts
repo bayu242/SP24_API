@@ -14,7 +14,16 @@ export const createStudentService = async (data: CreateStudentDTO) => {
 };
 
 export const getAllStudentsService = async () => {
-  return await prisma.student.findMany({ orderBy: { student_id: "desc" } });
+  return await prisma.student.findMany({ select:{
+    student_id: true,
+    nis: true,
+    first_name: true,
+    last_name: true,
+    class: true,
+    parent: true,
+    tag_id: true,
+    age: true,
+  } });
 };
 
 export const getStudentByIdService = async (id: number) => {

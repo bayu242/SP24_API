@@ -151,7 +151,7 @@ paths:
           description: Guru berhasil dihapus.
 
   /api/teachers/{id}/photo:
-    put:
+    post:
       tags: [Teachers]
       summary: Mengunggah foto profil guru
       parameters:
@@ -256,6 +256,30 @@ paths:
       responses:
         '200':
           description: Siswa berhasil dihapus.
+
+  /api/students/{id}/photo:
+    post:
+      tags: [Students]
+      summary: Mengunggah foto profil murid
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Foto berhasil diunggah.
 
   # ================= PRESENCES =================
   /api/presences/tap:

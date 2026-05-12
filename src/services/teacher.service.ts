@@ -58,6 +58,7 @@ export const getTeacherByIdService = async (id: number) => {
       last_name: true,
       gender: true,
       age: true,
+      images: true,
     },
   });
 
