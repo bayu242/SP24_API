@@ -1,4 +1,24 @@
 import * as studentService from "../services/student.service.js";
+export const getStudentById = async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            res
+                .status(400)
+                .json({ success: false, message: "ID harus berupa angka!" });
+            return;
+        }
+        const student = await studentService.getStudentByIdService(id);
+        res.status(200).json({
+            success: true,
+            message: "Data siswa berhasil ditemukan",
+            data: student,
+        });
+    }
+    catch (error) {
+        res.status(404).json({ success: false, message: error.message });
+    }
+};
 export const createStudent = async (req, res) => {
     try {
         const student = await studentService.createStudentService(req.body);

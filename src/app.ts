@@ -29,7 +29,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/teachers", teacherRoutes);
-app.use("/api/student", studentRoutes);
+app.use("/api/students", studentRoutes);
 app.use("/api/presences", presenceRoutes);
 
 // 4. Middleware Error Handling Global (Menangkap error dari seluruh rute)

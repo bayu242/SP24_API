@@ -3,11 +3,14 @@ import { Request, Response } from "express";
 import {
   loginAdminService,
   refreshTokenService,
+  teacherLoginService,
 } from "../services/auth.service.js";
+
+import { LoginDTO } from "../interfaces/auth.intefaces.js";
 
 export const loginAdmin = async (req: Request, res: Response) => {
   try {
-    const loginData = req.body;
+    const loginData: LoginDTO = req.body;
     const result = await loginAdminService(loginData);
 
     // 1. Tanam Refresh Token ke dalam HTTP-Only Cookie
@@ -19,16 +22,55 @@ export const loginAdmin = async (req: Request, res: Response) => {
     });
 
     // 2. Kirim respons HANYA dengan Access Token. Refresh Token disembunyikan.
+    const { refresh_token, ...safeData } = result.admin;
     res.status(200).json({
       success: true,
       message: "Login Administrator berhasil",
       data: {
-        admin: result.admin,
+        admin: safeData,
         accessToken: result.accessToken,
       },
     });
   } catch (error: any) {
     res.status(401).json({ success: false, message: error.message });
+  }
+};
+
+export const loginTeacher = async (req: Request, res: Response) => {
+  try {
+    const payload: LoginDTO = req.body;
+
+    if (!payload.username || !payload.password) {
+      res.status(400).json({
+        success: false,
+        message: "Username dan password wajib diisi!",
+      });
+      return;
+    }
+
+    // Panggil service (sekarang cukup passing 'payload' secara utuh)
+    const loginData = await teacherLoginService(payload);
+
+    // 1. Tanam Refresh Token ke dalam HTTP-Only Cookie
+    res.cookie("refreshToken", loginData.refreshToken, {
+      httpOnly: true, // Mencegah akses via JavaScript (Anti XSS)
+      secure: process.env.NODE_ENV === "production", // True jika di production (wajib HTTPS)
+      sameSite: "strict", // Mencegah pengiriman cookie dari situs lain (Anti CSRF)
+      maxAge: 7 * 24 * 60 * 60 * 1000, // Umur 7 Hari (sesuaikan dengan jwt.util.ts)
+    });
+
+    // 2. Kirim respons HANYA dengan Access Token. Refresh Token disembunyikan.
+    const { refreshToken, ...safeData } = loginData;
+    res.status(200).json({
+      success: true,
+      message: "Login berhasil",
+      data: safeData,
+    });
+  } catch (error: any) {
+    res.status(401).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 

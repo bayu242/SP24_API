@@ -26,22 +26,41 @@ export const handleStudentTapService = async (
     },
   });
 
+  // Waktu saat NFC di-tap
+  const now = new Date();
+
   // 4. Logika Masuk / Pulang
   if (!existingPresence) {
     // BELUM ABSEN -> Catat sebagai Absen Masuk (Enter)
     const newPresence = await prisma.presence.create({
       data: {
         student_id: student.student_id,
-        teacher_id: teacher_id, // Sekarang TypeScript tidak akan protes!
+        teacher_id: teacher_id,
       },
     });
     return { action: "ENTER", student, presence: newPresence };
   } else if (!existingPresence.exit) {
-    // SUDAH MASUK, BELUM PULANG -> Catat sebagai Absen Pulang (Exit)
-    // Disini kita juga bisa mengupdate siapa guru yang memulangkan jika diperlukan
+    // --- PENGECEKAN JEDA WAKTU 1 JAM (ANTI DOUBLE TAP) ---
+    const enterTime = existingPresence.enter;
+    // Hitung selisih waktu dalam milidetik (ms)
+    const diffInMilliseconds = now.getTime() - enterTime.getTime();
+
+    // Konversi selisih ms menjadi Jam (1 Jam = 1000ms * 60 detik * 60 menit)
+    const diffInHours = diffInMilliseconds / (1000 * 60 * 60);
+
+    if (diffInHours < 1) {
+      // Menghitung sisa menit untuk ditampilkan di pesan error
+      const sisaMenit = Math.ceil(60 - diffInMilliseconds / (1000 * 60));
+      throw new Error(
+        `Terlalu cepat! ${student.first_name} baru saja absen masuk. Silakan tunggu ${sisaMenit} menit lagi untuk absen pulang.`,
+      );
+    }
+    // -----------------------------------------------------
+
+    // SUDAH MASUK, BELUM PULANG (dan sudah lewat 1 jam) -> Catat Absen Pulang (Exit)
     const updatedPresence = await prisma.presence.update({
       where: { presence_id: existingPresence.presence_id },
-      data: { exit: new Date() },
+      data: { exit: now },
     });
     return { action: "EXIT", student, presence: updatedPresence };
   } else {
@@ -61,6 +80,7 @@ export const getPresenceByNisService = async (nis: string) => {
       first_name: true,
       last_name: true,
       class: true,
+      parent: true,
       presences: {
         orderBy: { enter: "desc" }, // Terbaru di atas
         take: 30, // Batasi 1 bulan terakhir agar data tidak terlalu berat
@@ -77,4 +97,29 @@ export const getPresenceByNisService = async (nis: string) => {
   }
 
   return studentWithPresences;
+};
+
+// Mengambil data presence
+export const getAllPresencesService = async () => {
+  return await prisma.presence.findMany({
+    orderBy: {
+      enter: "desc", // Menampilkan absensi terbaru di paling atas
+    },
+    include: {
+      student: {
+        select: {
+          first_name: true,
+          last_name: true,
+          nis: true,
+          class: true,
+        },
+      },
+      teacher: {
+        select: {
+          first_name: true,
+          last_name: true,
+        },
+      },
+    },
+  });
 };

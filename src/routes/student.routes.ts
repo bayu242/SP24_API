@@ -1,27 +1,36 @@
-// File: src/routes/student.routes.ts
 import { Router } from "express";
 import {
+  getStudentById,
   createStudent,
   getStudents,
   updateStudent,
   deleteStudent,
-  uploadStudentPhoto, // Import controller baru
+  uploadStudentPhoto,
 } from "../controllers/student.controller.js";
 import { verifyToken, isAdmin } from "../middlewares/auth.middleware.js";
-import { uploadImage } from "../middlewares/uploadImage.middleware.js"; // Gunakan middleware upload yang sudah ada
+import { uploadImage } from "../middlewares/uploadImage.middleware.js"; 
 
 const router = Router();
 
-// Middleware global untuk rute ini (Wajib Login & Admin)
-router.use(verifyToken, isAdmin);
+// 1. Penjaga Gerbang Utama: SEMUA rute wajib Login (punya Token JWT)
+router.use(verifyToken);
 
+// ==========================================
+// AKSES: ADMIN & TEACHER
+// ==========================================
+// Karena Teacher butuh melihat data, rute ini TIDAK dipasangi isAdmin
 router.get("/", getStudents);
-router.post("/", createStudent);
-router.put("/:id", updateStudent);
-router.delete("/:id", deleteStudent);
+router.get("/:id", getStudentById);
+
+// ==========================================
+// AKSES: KHUSUS ADMIN SAJA
+// ==========================================
+router.post("/", isAdmin, createStudent);
+router.put("/:id", isAdmin, updateStudent);
+router.delete("/:id", isAdmin, deleteStudent);
 
 // Endpoint khusus upload foto siswa
-// Pastikan di Postman key-nya adalah 'photo'
+// Pastikan key-nya adalah 'photo'
 router.post("/:id/photo", uploadImage.single("photo"), uploadStudentPhoto);
 
 export default router;

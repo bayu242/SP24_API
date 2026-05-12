@@ -69,3 +69,27 @@ export const getPresenceByNisService = async (nis) => {
     }
     return studentWithPresences;
 };
+// Mengambil data presence
+export const getAllPresencesService = async () => {
+    return await prisma.presence.findMany({
+        orderBy: {
+            enter: "desc", // Menampilkan absensi terbaru di paling atas
+        },
+        include: {
+            student: {
+                select: {
+                    first_name: true,
+                    last_name: true,
+                    nis: true,
+                    class: true,
+                },
+            },
+            teacher: {
+                select: {
+                    first_name: true,
+                    last_name: true,
+                },
+            },
+        },
+    });
+};

@@ -46,3 +46,18 @@ export const checkParentPortal = async (req, res) => {
         res.status(404).json({ success: false, message: error.message });
     }
 };
+// src/controllers/presence.controller.ts
+export const getAllPresences = async (req, res) => {
+    try {
+        const data = await presenceService.getAllPresencesService();
+        res.status(200).json({
+            success: true,
+            message: "Seluruh data absensi berhasil diambil",
+            count: data.length,
+            data: data,
+        });
+    }
+    catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
