@@ -42,6 +42,7 @@ export const getTeachersService = async () => {
       last_name: true,
       gender: true,
       age: true,
+      images: true,
       // tidak men-select password dan refresh_token demi keamanan
     },
   });

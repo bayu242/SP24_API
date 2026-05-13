@@ -6,11 +6,15 @@ import {
   updateStudent,
   deleteStudent,
   uploadStudentPhoto,
+  getStudentPhoto,
 } from "../controllers/student.controller.js";
 import { verifyToken, isAdmin } from "../middlewares/auth.middleware.js";
 import { uploadImage } from "../middlewares/uploadImage.middleware.js"; 
 
 const router = Router();
+
+// Endpoint khusus ambil foto siswa (Bisa diakses tanpa login agar mudah ditampilkan sebagai URL)
+router.get("/:id/photo", getStudentPhoto);
 
 // 1. Penjaga Gerbang Utama: SEMUA rute wajib Login (punya Token JWT)
 router.use(verifyToken);

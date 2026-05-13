@@ -23,6 +23,7 @@ export const getAllStudentsService = async () => {
     parent: true,
     tag_id: true,
     age: true,
+    images: true,
   } });
 };
 

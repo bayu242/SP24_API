@@ -6,6 +6,7 @@ import {
   getTeacherById,
   updateTeacher,
   deleteTeacher,
+  getPhoto,
 } from "../controllers/teacher.controller.js";
 import { verifyToken, isAdmin } from "../middlewares/auth.middleware.js";
 import { uploadPhoto } from "../controllers/teacher.controller.js";
@@ -19,6 +20,7 @@ router.get("/", verifyToken, isAdmin, getTeachers);
 router.get("/:id", verifyToken, isAdmin, getTeacherById);
 router.put("/:id", verifyToken, isAdmin, updateTeacher);
 router.delete("/:id", verifyToken, isAdmin, deleteTeacher);
+router.get("/:id/photo", getPhoto); // Publicly accessible or verifyToken if needed
 router.post(
   "/:id/photo",
   verifyToken,

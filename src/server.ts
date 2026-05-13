@@ -58,6 +58,8 @@ io.on("connection", (socket) => {
   socket.on("check-pairing-code", (code: string) => {
     if (activePairingCodes.has(code)) {
       socket.emit("pairing-verified", { success: true });
+      // Beritahu WebApp di room tersebut bahwa Android sudah terhubung
+      io.to(code).emit("device-connected", { socketId: socket.id });
       console.log(`✅ Verifikasi sukses: Kode ${code} (Android: ${socket.id})`);
     } else {
       socket.emit("pairing-verified", { success: false });

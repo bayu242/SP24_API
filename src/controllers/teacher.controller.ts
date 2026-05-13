@@ -112,3 +112,20 @@ export const uploadPhoto = async (req: Request, res: Response) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+
+export const getPhoto = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id as string);
+    const teacher = await getTeacherByIdService(id);
+
+    if (!teacher || !teacher.images) {
+      res.status(404).send("Photo not found");
+      return;
+    }
+
+    res.set("Content-Type", "image/jpeg");
+    res.send(teacher.images);
+  } catch (error: any) {
+    res.status(404).send("Photo not found");
+  }
+};

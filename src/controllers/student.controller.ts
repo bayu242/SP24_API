@@ -90,3 +90,20 @@ export const uploadStudentPhoto = async (req: Request, res: Response) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+
+export const getStudentPhoto = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id as string);
+    const student = await studentService.getStudentByIdService(id);
+
+    if (!student || !student.images) {
+      res.status(404).send("Photo not found");
+      return;
+    }
+
+    res.set("Content-Type", "image/jpeg");
+    res.send(student.images);
+  } catch (error: any) {
+    res.status(404).send("Photo not found");
+  }
+};

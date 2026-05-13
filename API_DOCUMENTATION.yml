@@ -177,6 +177,24 @@ paths:
       responses:
         '200':
           description: Foto berhasil diunggah.
+    get:
+      tags: [Teachers]
+      summary: Mengambil foto profil guru secara langsung
+      security: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Mengembalikan file gambar raw.
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
 
   # ================= STUDENTS =================
   /api/students:
@@ -284,6 +302,24 @@ paths:
       responses:
         '200':
           description: Foto berhasil diunggah.
+    get:
+      tags: [Students]
+      summary: Mengambil foto profil murid secara langsung
+      security: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Mengembalikan file gambar raw.
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
 
   # ================= PRESENCES =================
   /api/presences/tap:
