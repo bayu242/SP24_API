@@ -6,8 +6,8 @@ export const handleStudentTapService = async (
   teacher_id: number,
 ) => {
   // 1. Cari siswa berdasarkan tag NFC
-  const student = await prisma.student.findUnique({ where: { tag_id } });
-  if (!student) throw new Error("Kartu tidak dikenali / Belum terdaftar.");
+  const studentData = await prisma.student.findUnique({ where: { tag_id } });
+  if (!studentData) throw new Error("Kartu tidak dikenali / Belum terdaftar.");
 
   // 2. Tentukan batas waktu hari ini (Jam 00:00:00 sampai 23:59:59)
   const today = new Date();
@@ -18,7 +18,7 @@ export const handleStudentTapService = async (
   // 3. Cek apakah siswa sudah absen masuk hari ini
   const existingPresence = await prisma.presence.findFirst({
     where: {
-      student_id: student.student_id,
+      student_id: studentData.student_id,
       enter: {
         gte: today, // Lebih besar atau sama dengan awal hari ini
         lt: tomorrow, // Lebih kecil dari besok
@@ -34,10 +34,11 @@ export const handleStudentTapService = async (
     // BELUM ABSEN -> Catat sebagai Absen Masuk (Enter)
     const newPresence = await prisma.presence.create({
       data: {
-        student_id: student.student_id,
+        student_id: studentData.student_id,
         teacher_id: teacher_id,
       },
     });
+    const {images, ...student} = studentData
     return { action: "ENTER", student, presence: newPresence };
   } else if (!existingPresence.exit) {
     // --- PENGECEKAN JEDA WAKTU 1 JAM (ANTI DOUBLE TAP) ---
@@ -52,7 +53,7 @@ export const handleStudentTapService = async (
       // Menghitung sisa menit untuk ditampilkan di pesan error
       const sisaMenit = Math.ceil(60 - diffInMilliseconds / (1000 * 60));
       throw new Error(
-        `Terlalu cepat! ${student.first_name} baru saja absen masuk. Silakan tunggu ${sisaMenit} menit lagi untuk absen pulang.`,
+        `Terlalu cepat! ${studentData.first_name} baru saja absen masuk. Silakan tunggu ${sisaMenit} menit lagi untuk absen pulang.`,
       );
     }
     // -----------------------------------------------------
@@ -62,10 +63,11 @@ export const handleStudentTapService = async (
       where: { presence_id: existingPresence.presence_id },
       data: { exit: now },
     });
+    const {images, ...student} = studentData
     return { action: "EXIT", student, presence: updatedPresence };
   } else {
     throw new Error(
-      `Siswa ${student.first_name} sudah melakukan absensi masuk dan pulang hari ini.`,
+      `Siswa ${studentData.first_name} sudah melakukan absensi masuk dan pulang hari ini.`,
     );
   }
 };
