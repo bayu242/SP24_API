@@ -69,20 +69,31 @@ paths:
 
   /api/auth/refresh-token:
     post:
-      tags: [Auth]
-      summary: Generate Token Baru (Refresh Session)
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                refreshToken:
-                  type: string
+      tags:
+        - Auth
+      summary: Generate access token baru berdasarkan HttpOnly refresh cookie
+      description: >
+        Endpoint ini menggunakan refresh token yang tersimpan
+        pada HttpOnly cookie browser. Tidak memerlukan request body.
+      security:
+        - cookieAuth: []
       responses:
         '200':
-          description: Berhasil mendapatkan token baru.
+          description: Berhasil mendapatkan access token baru
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+        '401':
+          description: Refresh token tidak valid atau tidak tersedia
+
+        '403':
+          description: Refresh token expired atau ditolak
 
   # ================= TEACHERS =================
   /api/teachers:
