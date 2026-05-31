@@ -3,6 +3,7 @@ import {
   CreateStudentDTO,
   UpdateStudentDTO,
 } from "../interfaces/student.interface.js";
+import { compressImage } from "../utils/imageCompressor.util.js";
 
 export const createStudentService = async (data: CreateStudentDTO) => {
   const existing = await prisma.student.findFirst({
@@ -58,10 +59,20 @@ export const uploadStudentImageService = async (
   // 1. Pastikan siswa ada
   await getStudentByIdService(id);
 
-  // 2. Konversi Buffer ke Uint8Array untuk Prisma
-  const uint8Array = new Uint8Array(imageBuffer);
+  // 2. Kompres gambar menggunakan Sharp sebelum disimpan ke database
+  //    - Resize: maks 800x800 px (menjaga aspek rasio, tidak memperbesar)
+  //    - Format: JPEG dengan kualitas 80%
+  const compressedBuffer = await compressImage(imageBuffer, {
+    maxWidth: 800,
+    maxHeight: 800,
+    quality: 80,
+    format: "jpeg",
+  });
 
-  // 3. Update kolom images
+  // 3. Konversi Buffer yang sudah dikompres ke Uint8Array untuk Prisma
+  const uint8Array = new Uint8Array(compressedBuffer);
+
+  // 4. Update kolom images
   const updatedStudent = await prisma.student.update({
     where: { student_id: id },
     data: {
