@@ -16,7 +16,7 @@ const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "default_refresh";
  */
 export const generateTokens = (payload: TokenPayload) => {
   // Access token berumur pendek (contoh: 15 menit)
-  const accessToken = jwt.sign(payload, ACCESS_SECRET, { expiresIn: "15m" });
+  const accessToken = jwt.sign(payload, ACCESS_SECRET, { expiresIn: "1h" });
 
   // Refresh token berumur panjang (contoh: 7 hari)
   const refreshToken = jwt.sign(payload, REFRESH_SECRET, { expiresIn: "7d" });
